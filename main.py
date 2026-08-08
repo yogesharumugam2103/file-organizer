@@ -161,178 +161,455 @@ def clear_selection():
     status_label.config(text="Status: Ready")
 
 window = tk.Tk()
+
 organization_mode = tk.StringVar(
     master=window,
     value="category"
 )
 
+# -------------------------------
+# GUI Theme
+# -------------------------------
+
+BG_COLOR = "#F4F6F8"
+CARD_COLOR = "#FFFFFF"
+PRIMARY_COLOR = "#2563EB"
+PRIMARY_HOVER = "#1D4ED8"
+TEXT_COLOR = "#1F2937"
+SECONDARY_TEXT = "#6B7280"
+BORDER_COLOR = "#D1D5DB"
+
+TITLE_FONT = ("Segoe UI", 24, "bold")
+SUBTITLE_FONT = ("Segoe UI", 10)
+HEADING_FONT = ("Segoe UI", 11, "bold")
+NORMAL_FONT = ("Segoe UI", 10)
+BUTTON_FONT = ("Segoe UI", 10, "bold")
+
+
+# -------------------------------
+# Window
+# -------------------------------
+
 window.title("File Organizer")
-window.geometry("1000x600")
+
+window_width = 1000
+window_height = 650
+
+screen_width = window.winfo_screenwidth()
+screen_height = window.winfo_screenheight()
+
+x = (screen_width - window_width) // 2
+y = (screen_height - window_height) // 2 - 90
+
+window.geometry(
+    f"{window_width}x{window_height}+{x}+{y}"
+)
+
+window.minsize(900, 750)
+window.configure(bg=BG_COLOR)
 
 
+# -------------------------------
 # Title
+# -------------------------------
+
 title_label = tk.Label(
     window,
     text="File Organizer",
-    font=("Arial", 20, "bold")
+    font=TITLE_FONT,
+    bg=BG_COLOR,
+    fg=TEXT_COLOR
 )
 
-title_label.pack(pady=20)
+title_label.pack(pady=(15, 5))
 
 
-# Folder section
-folder_frame = tk.Frame(window)
-folder_frame.pack(pady=10)
+subtitle_label = tk.Label(
+    window,
+    text="Organize your files quickly and effortlessly",
+    font=SUBTITLE_FONT,
+    bg=BG_COLOR,
+    fg=SECONDARY_TEXT
+)
+
+subtitle_label.pack(pady=(0, 20))
+
+
+# -------------------------------
+# Folder Card
+# -------------------------------
+
+folder_frame = tk.Frame(
+    window,
+    bg=CARD_COLOR,
+    highlightbackground=BORDER_COLOR,
+    highlightthickness=1
+)
+
+folder_frame.pack(
+    fill="x",
+    padx=80,
+    pady=5
+)
+
 
 folder_title = tk.Label(
     folder_frame,
-    text="Selected Folder",
-    font=("Arial", 12, "bold")
+    text="SELECTED FOLDER",
+    font=HEADING_FONT,
+    bg=CARD_COLOR,
+    fg=TEXT_COLOR
 )
 
-folder_title.pack()
+folder_title.pack(pady=(15, 8))
 
-browse_button = tk.Button(
+
+folder_content = tk.Frame(
     folder_frame,
-    text="Browse",
-    command=browse_folder
+    bg=CARD_COLOR
 )
 
-browse_button.pack()
+folder_content.pack(
+    fill="x",
+    padx=20,
+    pady=(0, 15)
+)
+
 
 folder_label = tk.Label(
-    folder_frame,
+    folder_content,
     text="No folder selected",
-    wraplength=700,
-    font=("Arial", 10)
+    wraplength=650,
+    anchor="w",
+    font=NORMAL_FONT,
+    bg=CARD_COLOR,
+    fg=SECONDARY_TEXT
 )
 
-folder_label.pack(pady=15)
+folder_label.pack(
+    side=tk.LEFT,
+    fill="x",
+    expand=True,
+    padx=(0, 15)
+)
 
 
-# Action buttons section
-actions_frame = tk.Frame(window)
-actions_frame.pack(pady=10)
+browse_button = tk.Button(
+    folder_content,
+    text="Browse",
+    command=browse_folder,
+    font=BUTTON_FONT,
+    bg=PRIMARY_COLOR,
+    fg="white",
+    activebackground=PRIMARY_HOVER,
+    activeforeground="white",
+    relief="flat",
+    padx=25,
+    pady=8,
+    cursor="hand2"
+)
 
-mode_frame = tk.Frame(window)
-mode_frame.pack(pady=5)
+browse_button.pack(side=tk.RIGHT)
+
+
+# -------------------------------
+# Organization Mode
+# -------------------------------
+
+mode_frame = tk.Frame(
+    window,
+    bg=BG_COLOR
+)
+
+mode_frame.pack(pady=3)
+
 
 mode_title = tk.Label(
     mode_frame,
-    text="Organization Mode",
-    font=("Arial", 11, "bold")
+    text="ORGANIZATION MODE",
+    font=HEADING_FONT,
+    bg=BG_COLOR,
+    fg=TEXT_COLOR
 )
 
-mode_title.pack()
+mode_title.pack(pady=(0, 5))
+
+
+radio_frame = tk.Frame(
+    mode_frame,
+    bg=BG_COLOR
+)
+
+radio_frame.pack()
+
 
 category_radio = tk.Radiobutton(
-    mode_frame,
+    radio_frame,
     text="By Category",
     variable=organization_mode,
     value="category",
-    command=preview_files
+    command=preview_files,
+    font=NORMAL_FONT,
+    bg=BG_COLOR,
+    fg=TEXT_COLOR,
+    activebackground=BG_COLOR,
+    activeforeground=TEXT_COLOR
 )
 
-category_radio.pack(side=tk.LEFT, padx=10)
+category_radio.pack(
+    side=tk.LEFT,
+    padx=15
+)
+
 
 extension_radio = tk.Radiobutton(
-    mode_frame,
+    radio_frame,
     text="By Extension",
     variable=organization_mode,
     value="extension",
-    command=preview_files
+    command=preview_files,
+    font=NORMAL_FONT,
+    bg=BG_COLOR,
+    fg=TEXT_COLOR,
+    activebackground=BG_COLOR,
+    activeforeground=TEXT_COLOR
 )
 
-extension_radio.pack(side=tk.LEFT, padx=10)
+extension_radio.pack(
+    side=tk.LEFT,
+    padx=15
+)
+
+
+# -------------------------------
+# Action Buttons
+# -------------------------------
+
+actions_frame = tk.Frame(
+    window,
+    bg=BG_COLOR
+)
+
+actions_frame.pack(pady=5)
+
 
 preview_button = tk.Button(
     actions_frame,
     text="Preview",
-    command=preview_files
+    command=preview_files,
+    font=NORMAL_FONT,
+    bg="#E8EEF7",
+    fg=PRIMARY_COLOR,
+    activebackground="#D8E4F5",
+    activeforeground=PRIMARY_COLOR,
+    relief="solid",
+    bd=1,
+    padx=25,
+    pady=9,
+    cursor="hand2"
 )
 
-preview_button.pack(side=tk.LEFT, padx=5)
+preview_button.pack(
+    side=tk.LEFT,
+    padx=6
+)
+
 
 organize_button = tk.Button(
     actions_frame,
     text="Organize Files",
-    command=organize_files
+    command=organize_files,
+    font=BUTTON_FONT,
+    bg=PRIMARY_COLOR,
+    fg="white",
+    activebackground=PRIMARY_HOVER,
+    activeforeground="white",
+    relief="flat",
+    padx=25,
+    pady=9,
+    cursor="hand2"
 )
 
-organize_button.pack(side=tk.LEFT, padx=5)
+organize_button.pack(
+    side=tk.LEFT,
+    padx=6
+)
+
 
 clear_button = tk.Button(
     actions_frame,
     text="Clear",
-    command=clear_selection
+    command=clear_selection,
+    font=NORMAL_FONT,
+    bg=CARD_COLOR,
+    fg=TEXT_COLOR,
+    activebackground="#E5E7EB",
+    activeforeground=TEXT_COLOR,
+    relief="solid",
+    bd=1,
+    padx=25,
+    pady=9,
+    cursor="hand2"
 )
 
-clear_button.pack(side=tk.LEFT, padx=5)
+clear_button.pack(
+    side=tk.LEFT,
+    padx=6
+)
 
 
-# Results section
+# -------------------------------
+# Results
+# -------------------------------
+
 results_label = tk.Label(
     window,
-    text="Results",
-    font=("Arial", 12, "bold")
+    text="RESULTS",
+    font=HEADING_FONT,
+    bg=BG_COLOR,
+    fg=TEXT_COLOR
 )
 
-results_label.pack()
+results_label.pack(pady=(3, 3))
 
-results_frame = tk.Frame(window)
-results_frame.pack(pady=10)
+
+results_frame = tk.Frame(
+    window,
+    bg=CARD_COLOR,
+    highlightbackground=BORDER_COLOR,
+    highlightthickness=1
+)
+
+results_frame.pack(
+    fill="both",
+    expand=True,
+    padx=80,
+    pady=5
+)
 
 result_text = tk.Text(
     results_frame,
-    height=10,
-    width=80
+    height=9,
+    width=80,
+    font=("Consolas", 10),
+    bg="#FFFFFF",
+    fg=TEXT_COLOR,
+    insertbackground=TEXT_COLOR,
+    relief="solid",
+    bd=1,
+    padx=12,
+    pady=10,
+    wrap="none"
 )
 
-result_text.pack(side=tk.LEFT)
+result_text.pack(
+    side=tk.LEFT,
+    fill="both",
+    expand=True
+)
+
 
 results_scrollbar = tk.Scrollbar(
     results_frame,
-    command=result_text.yview
+    command=result_text.yview,
+    relief="flat"
 )
 
-results_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+results_scrollbar.pack(
+    side=tk.RIGHT,
+    fill=tk.Y
+)
+
 
 result_text.config(
     yscrollcommand=results_scrollbar.set
 )
 
+
+# -------------------------------
 # Statistics
-statistics_title = tk.Label(
+# -------------------------------
+
+# Statistics
+
+statistics_frame = tk.Frame(
     window,
-    text="Statistics",
-    font=("Arial", 12, "bold")
+    bg=CARD_COLOR,
+    bd=1,
+    relief="solid"
 )
 
-statistics_title.pack(pady=5)
+statistics_frame.pack(
+    pady=4,
+    padx=100,
+    fill="x"
+)
+
+statistics_title = tk.Label(
+    statistics_frame,
+    text="STATISTICS",
+    font=("Arial", 11, "bold"),
+    bg=CARD_COLOR,
+    fg=TEXT_COLOR
+)
+
+statistics_title.pack(pady=(5, 2))
 
 stats_label = tk.Label(
-    window,
-    text=""
+    statistics_frame,
+    text="No preview available",
+    font=("Arial", 10),
+    bg=CARD_COLOR,
+    fg=SECONDARY_TEXT
 )
 
-stats_label.pack(pady=5)
+stats_label.pack(pady=(3, 10))
+
+
+# Progress section
+
+progress_frame = tk.Frame(
+    window,
+    bg=BG_COLOR
+)
+
+progress_frame.pack(
+    pady=5
+)
+
+progress_title = tk.Label(
+    progress_frame,
+    text="PROGRESS",
+    font=("Arial", 11, "bold"),
+    bg=BG_COLOR,
+    fg=TEXT_COLOR
+)
+
+progress_title.pack(pady=(0, 5))
 
 progress_bar = ttk.Progressbar(
-    window,
+    progress_frame,
     orient="horizontal",
-    length=400,
+    length=500,
     mode="determinate"
 )
 
-progress_bar.pack(pady=10)
+progress_bar.pack()
 
+
+# -------------------------------
 # Status
+# -------------------------------
+
 status_label = tk.Label(
     window,
-    text="Status: Ready"
+    text="Status: Ready",
+    font=NORMAL_FONT,
+    bg=BG_COLOR,
+    fg=SECONDARY_TEXT
 )
 
-status_label.pack(pady=10)
+status_label.pack(pady=(2, 15))
 
 
 window.mainloop()
