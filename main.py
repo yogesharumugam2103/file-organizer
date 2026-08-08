@@ -165,6 +165,15 @@ def organize_files():
             mode=organization_mode.get()
         )
 
+        undo_button.config(
+        state=tk.NORMAL,
+        bg=PRIMARY_COLOR,
+        fg="white",
+        activebackground=PRIMARY_HOVER,
+        activeforeground="white",
+        cursor="hand2"
+    )
+
         result_text.delete("1.0", tk.END)
 
         for result in results:
@@ -213,6 +222,15 @@ def undo_organization():
 
     try:
         results = undo_last_organization()
+
+        undo_button.config(
+        state=tk.DISABLED,
+        bg="#E5E7EB",
+        fg="#9CA3AF",
+        activebackground="#E5E7EB",
+        activeforeground="#9CA3AF",
+        cursor="arrow"
+    )
 
         result_text.delete("1.0", tk.END)
 
@@ -526,15 +544,17 @@ undo_button = tk.Button(
     text="Undo",
     command=undo_organization,
     font=NORMAL_FONT,
-    bg=CARD_COLOR,
-    fg=TEXT_COLOR,
+    bg="#E5E7EB",
+    fg="#9CA3AF",
     activebackground="#E5E7EB",
-    activeforeground=TEXT_COLOR,
+    activeforeground="#9CA3AF",
+    disabledforeground="#9CA3AF",
     relief="solid",
     bd=1,
     padx=25,
     pady=9,
-    cursor="hand2"
+    cursor="arrow",
+    state=tk.DISABLED
 )
 
 undo_button.pack(
