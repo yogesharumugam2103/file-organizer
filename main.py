@@ -66,7 +66,9 @@ def preview_files():
             f"{result['name']} → {result['category']}\n"
         )    
 
-    stats_text = " | ".join(
+    total_files = len(results)
+
+    stats_text = f"Total files: {total_files} | " + " | ".join(
         f"{category}: {count}"
         for category, count in category_counts.items()
     )
