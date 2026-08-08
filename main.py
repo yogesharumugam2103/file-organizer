@@ -26,15 +26,11 @@ def preview_files():
 
     if results is None:
         result_text.delete("1.0", tk.END)
-        result_text.insert(
-            tk.END,
-            "Invalid folder."
-        )
+        result_text.insert(tk.END, "Invalid folder.")
 
         stats_label.config(text="")
         status_label.config(text="Preview failed")
-
-        return    
+        return
 
     if not results:
         result_text.delete("1.0", tk.END)
@@ -45,38 +41,50 @@ def preview_files():
 
         stats_label.config(text="")
         status_label.config(text="Preview: No files found")
-
         return
 
-    category_counts = {}
-
-    for result in results:
-        category = result["category"]
-
-        if category not in category_counts:
-            category_counts[category] = 0
-
-        category_counts[category] += 1
+    # Get the currently selected mode
+    mode = organization_mode.get()
 
     result_text.delete("1.0", tk.END)
 
+    counts = {}
+
     for result in results:
+
+        if mode == "extension":
+            destination = result["extension"]
+
+            if not destination:
+                destination = "No Extension"
+
+        else:
+            destination = result["category"]
+
+        # Display the actual destination
         result_text.insert(
             tk.END,
-            f"{result['name']} → {result['category']}\n"
-        )    
+            f"{result['name']} → {destination}\n"
+        )
+
+        # Count according to the selected mode
+        if destination not in counts:
+            counts[destination] = 0
+
+        counts[destination] += 1
 
     total_files = len(results)
 
     stats_text = f"Total files: {total_files} | " + " | ".join(
-        f"{category}: {count}"
-        for category, count in category_counts.items()
+        f"{name}: {count}"
+        for name, count in counts.items()
     )
 
     stats_label.config(text=stats_text)
 
     status_label.config(
-        text=f"Preview: {len(results)} file(s) found"
+        text=f"Preview ({'By Extension' if mode == 'extension' else 'By Category'}): "
+             f"{total_files} file(s) found"
     )
 
 def organize_files():
@@ -114,7 +122,8 @@ def organize_files():
     try:
         results = organize_folder(
             selected_folder,
-            progress_callback=update_progress
+            progress_callback=update_progress,
+            mode=organization_mode.get()
         )
 
         result_text.delete("1.0", tk.END)
@@ -152,6 +161,10 @@ def clear_selection():
     status_label.config(text="Status: Ready")
 
 window = tk.Tk()
+organization_mode = tk.StringVar(
+    master=window,
+    value="category"
+)
 
 window.title("File Organizer")
 window.geometry("1000x600")
@@ -200,6 +213,37 @@ folder_label.pack(pady=15)
 # Action buttons section
 actions_frame = tk.Frame(window)
 actions_frame.pack(pady=10)
+
+mode_frame = tk.Frame(window)
+mode_frame.pack(pady=5)
+
+mode_title = tk.Label(
+    mode_frame,
+    text="Organization Mode",
+    font=("Arial", 11, "bold")
+)
+
+mode_title.pack()
+
+category_radio = tk.Radiobutton(
+    mode_frame,
+    text="By Category",
+    variable=organization_mode,
+    value="category",
+    command=preview_files
+)
+
+category_radio.pack(side=tk.LEFT, padx=10)
+
+extension_radio = tk.Radiobutton(
+    mode_frame,
+    text="By Extension",
+    variable=organization_mode,
+    value="extension",
+    command=preview_files
+)
+
+extension_radio.pack(side=tk.LEFT, padx=10)
 
 preview_button = tk.Button(
     actions_frame,

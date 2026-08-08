@@ -33,12 +33,17 @@ def preview_folder(folder):
 
             results.append({
                 "name": item.name,
-                "category": category
+                "category": category,
+                "extension": item.suffix.lower()
             })
 
     return results
 
-def organize_folder(folder, progress_callback=None):
+def organize_folder(
+    folder,
+    progress_callback=None,
+    mode="category"
+):
     folder = Path(folder)
 
     if not folder.exists():
@@ -65,7 +70,15 @@ def organize_folder(folder, progress_callback=None):
             extension = item.suffix.lower()
             category = categories.get(extension, "Others")
 
-            destination = folder / category
+            if mode == "extension":
+                if extension:
+                    destination = folder / extension
+                else:
+                    destination = folder / "No Extension"
+            
+            else:
+                destination = folder / category
+
             destination.mkdir(exist_ok=True)
 
             destination_file = destination / item.name
