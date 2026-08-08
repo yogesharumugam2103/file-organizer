@@ -1,11 +1,23 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from organizer import organize_folder, preview_folder
+from organizer import (
+    organize_folder,
+    preview_folder,
+    undo_last_organization
+)
 
 
 selected_folder = None
 
+CATEGORY_ICONS = {
+    "Documents": "📄",
+    "Images": "🖼",
+    "Music": "🎵",
+    "Videos": "🎬",
+    "Code": "💻",
+    "Others": "📦"
+}
 
 def browse_folder():
     global selected_folder
@@ -19,7 +31,18 @@ def browse_folder():
 
 def preview_files():
     if selected_folder is None:
-        status_label.config(text="Please select a folder first")
+        result_text.delete("1.0", tk.END)
+        result_text.insert(
+            tk.END,
+            "Please select a folder first."
+        )
+
+        stats_label.config(text="")
+
+        status_label.config(
+            text="Preview unavailable"
+        )
+
         return
 
     results = preview_folder(selected_folder)
@@ -62,9 +85,14 @@ def preview_files():
             destination = result["category"]
 
         # Display the actual destination
+        icon = CATEGORY_ICONS.get(
+            result["category"],
+            "📦"
+        )    
+
         result_text.insert(
             tk.END,
-            f"{result['name']} → {destination}\n"
+            f"{icon}  {result['name']} → {destination}\n"
         )
 
         # Count according to the selected mode
@@ -89,7 +117,18 @@ def preview_files():
 
 def organize_files():
     if selected_folder is None:
-        status_label.config(text="Please select a folder first")
+        result_text.delete("1.0", tk.END)
+        result_text.insert(
+            tk.END,
+            "Please select a folder first."
+        )
+
+        stats_label.config(text="")
+
+        status_label.config(
+            text="Organization unavailable"
+        )
+
         return
 
     confirmed = messagebox.askyesno(
@@ -149,6 +188,53 @@ def organize_files():
         preview_button.config(state=tk.NORMAL)
         organize_button.config(state=tk.NORMAL)
         clear_button.config(state=tk.NORMAL)
+
+def undo_organization():
+    if selected_folder is None:
+        result_text.delete("1.0", tk.END)
+        result_text.insert(
+            tk.END,
+            "Please select a folder first."
+        )    
+        status_label.config(
+            text="Undo unavailable"
+        )
+
+        return
+
+    confirmed = messagebox.askyesno(
+        "Undo Organization",
+        "Are you sure you want to undo the last organization?"
+    )
+
+    if not confirmed:
+        status_label.config(text="Undo cancelled")
+        return
+
+    try:
+        results = undo_last_organization()
+
+        result_text.delete("1.0", tk.END)
+
+        for result in results:
+            result_text.insert(
+                tk.END,
+                result + "\n"
+            )
+
+        status_label.config(
+            text=f"Undo completed! {len(results)} result(s)"
+        )
+
+    except Exception as error:
+        messagebox.showerror(
+            "Undo Error",
+            f"An unexpected error occurred:\n\n{error}"
+        )
+
+        status_label.config(
+            text="Undo failed"
+        )
 
 def clear_selection():
     global selected_folder
@@ -435,6 +521,26 @@ organize_button.pack(
     padx=6
 )
 
+undo_button = tk.Button(
+    actions_frame,
+    text="Undo",
+    command=undo_organization,
+    font=NORMAL_FONT,
+    bg=CARD_COLOR,
+    fg=TEXT_COLOR,
+    activebackground="#E5E7EB",
+    activeforeground=TEXT_COLOR,
+    relief="solid",
+    bd=1,
+    padx=25,
+    pady=9,
+    cursor="hand2"
+)
+
+undo_button.pack(
+    side=tk.LEFT,
+    padx=6
+)
 
 clear_button = tk.Button(
     actions_frame,

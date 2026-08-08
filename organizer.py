@@ -3,6 +3,8 @@ import shutil
 
 from categories import categories
 
+last_organization = []
+
 def get_unique_path(path):
     if not path.exists():
         return path
@@ -39,6 +41,52 @@ def preview_folder(folder):
 
     return results
 
+def undo_last_organization():
+    global last_organization
+
+    if not last_organization:
+        return ["Nothing to undo."]
+
+    moves_to_undo = last_organization.copy()
+    results = []
+
+    for move in reversed(moves_to_undo):
+        original_path = move["original"]
+        destination_path = move["destination"]
+
+        try:
+            if destination_path.exists():
+                original_path.parent.mkdir(
+                    parents=True,
+                    exist_ok=True
+                )
+
+                restored_path = get_unique_path(original_path)
+
+                shutil.move(
+                    destination_path,
+                    restored_path
+                )
+
+                results.append(
+                    f"Restored: {destination_path.name}"
+                )
+
+            else:
+                results.append(
+                    f"Could not restore: {destination_path.name}"
+                )
+
+        except Exception as error:
+            results.append(
+                f"Could not restore {destination_path.name}: {error}"
+            )
+
+    # Clear history ONLY after the undo operation has been attempted
+    last_organization = []
+
+    return results
+
 def organize_folder(
     folder,
     progress_callback=None,
@@ -50,6 +98,9 @@ def organize_folder(
         return ["Error: Folder does not exist."]
     
     results = []
+
+    global last_organization
+    last_organization = []
 
     category_folders = set(categories.values())
     category_folders.add("Others")
@@ -85,7 +136,16 @@ def organize_folder(
             destination_file = get_unique_path(destination_file)
 
         try:
+            original_path = item
+
             shutil.move(item, destination_file)
+
+            last_organization.append(
+                {
+                    "original": original_path,
+                    "destination": destination_file
+                }
+            )    
 
             results.append(
                 f"{item.name} → {category}"
