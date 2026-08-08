@@ -179,8 +179,20 @@ def organize_files():
         for result in results:
             result_text.insert(tk.END, result + "\n")
 
+        successful_files = sum(
+            1 for result in results
+            if result.startswith("✓")
+        )
+
+        failed_files = sum(
+            1 for result in results
+            if result.startswith("✗")
+        )
+
         status_label.config(
-            text=f"Organization completed! {len(results)} result(s)"
+            text=f"Organization completed! "
+                 f"{successful_files} successful, "
+                 f"{failed_files} failed"
         )
 
     except Exception as error:
@@ -240,8 +252,20 @@ def undo_organization():
                 result + "\n"
             )
 
+        successful_restores = sum(
+            1 for result in results
+            if result.startswith("✓")
+        )
+
+        failed_restores = sum(
+            1 for result in results
+            if result.startswith("✗")
+        )
+
         status_label.config(
-            text=f"Undo completed! {len(results)} result(s)"
+            text=f"Undo completed! "
+                 f"{successful_restores} restored, "
+                 f"{failed_restores} failed"
         )
 
     except Exception as error:

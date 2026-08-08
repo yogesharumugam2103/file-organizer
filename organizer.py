@@ -69,12 +69,12 @@ def undo_last_organization():
                 )
 
                 results.append(
-                    f"Restored: {destination_path.name}"
+                    f"✓ Restored: {destination_path.name}"
                 )
 
             else:
                 results.append(
-                    f"Could not restore: {destination_path.name}"
+                    f"✗ Could not restore: {destination_path.name}"
                 )
 
         except Exception as error:
@@ -148,7 +148,7 @@ def organize_folder(
             )    
 
             results.append(
-                f"{item.name} → {category}"
+                f"✓ {item.name} → {category}"
             )
 
             processed_files += 1
@@ -161,7 +161,7 @@ def organize_folder(
 
         except Exception as error:
             results.append(
-                f"Could not move {item.name}: {error}"
+                f"✗ Could not move {item.name}: {error}"
             )
 
     return results
